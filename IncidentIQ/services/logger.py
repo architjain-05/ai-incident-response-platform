@@ -35,19 +35,22 @@ def get_logger(service_name: str) -> logging.Logger:
         # Build path to the log file (e.g. logs/order.log)
         log_file = logs_dir / f"{service_name.lower()}.log"
 
-        # Log format: YYYY-MM-DD HH:MM:SS | SERVICE | LEVEL | MESSAGE
-        log_format = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+        # File log format: YYYY-MM-DD HH:MM:SS LEVEL MESSAGE
+        file_log_format = "%(asctime)s %(levelname)s %(message)s"
+        console_log_format = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
         date_format = "%Y-%m-%d %H:%M:%S"
-        formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
+
+        file_formatter = logging.Formatter(fmt=file_log_format, datefmt=date_format)
+        console_formatter = logging.Formatter(fmt=console_log_format, datefmt=date_format)
 
         # File Handler
         file_handler = logging.FileHandler(log_file, encoding="utf-8")
-        file_handler.setFormatter(formatter)
+        file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 
         # Console Handler
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
+        console_handler.setFormatter(console_formatter)
         logger.addHandler(console_handler)
 
     return logger
