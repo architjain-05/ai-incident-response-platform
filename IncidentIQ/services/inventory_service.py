@@ -9,9 +9,11 @@ import time
 from typing import Final
 
 from logger import get_logger
+from service_base import emit_log
 
 # Obtain logger for the INVENTORY service
-logger = get_logger("INVENTORY")
+SERVICE_NAME = "INVENTORY"
+logger = get_logger(SERVICE_NAME)
 
 # Events constants
 INFO_EVENTS: Final[list[str]] = [
@@ -37,6 +39,17 @@ ALL_EVENTS: Final[list[tuple[str, str]]] = (
 )
 
 
+def log_event(level: str, message: str) -> None:
+    if level == "INFO":
+        logger.info(message)
+    elif level == "WARNING":
+        logger.warning(message)
+    elif level == "ERROR":
+        logger.error(message)
+
+    emit_log(SERVICE_NAME, level, message)
+
+
 def run_service() -> None:
     """
     Run the Inventory Service simulation indefinitely.
@@ -45,25 +58,20 @@ def run_service() -> None:
     then sleeps for a random interval between 2 and 5 seconds.
     """
     logger.info("Inventory Service simulation started.")
+    emit_log(SERVICE_NAME, "INFO", "Inventory Service simulation started.")
 
     while True:
         try:
             # Randomly choose an event and its level
             level, message = random.choice(ALL_EVENTS)
-
-            # Log based on the level
-            if level == "INFO":
-                logger.info(message)
-            elif level == "WARNING":
-                logger.warning(message)
-            elif level == "ERROR":
-                logger.error(message)
+            log_event(level, message)
 
             # Sleep for a random interval between 2 and 5 seconds
             sleep_time = random.randint(2, 5)
             time.sleep(sleep_time)
         except KeyboardInterrupt:
             logger.info("Inventory Service simulation stopped by user.")
+            emit_log(SERVICE_NAME, "INFO", "Inventory Service simulation stopped by user.")
             break
 
 
